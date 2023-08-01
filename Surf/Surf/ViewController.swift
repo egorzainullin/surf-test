@@ -28,6 +28,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var editButton: UIButton!
     
+    var plusButton: UIButton!
+    
     var isEditingMode = false
     
     let offset = 20.0
@@ -50,23 +52,20 @@ class ViewController: UIViewController {
         let bounds = UIScreen.main.bounds
         maxWidth = bounds.size.width - 2 * offset
         drawSkills()
+        hideButtonsFromSkillView()
     }
     
     @IBAction func onEditButtonTouchUpInside(_ sender: Any) {
         if !isEditingMode {
             isEditingMode = true
             editButton.setImage(UIImage(named: "tick"), for: .normal)
-            let views = skillsView.subviews.compactMap {
-                $0 as? SkillView
-            }
-            views.forEach {
-                $0.showButton()
-            }
+            showButtonsFromSkillView()
         }
         else {
             isEditingMode = false
             setEditButton()
             redrawSkills()
+            hideButtonsFromSkillView()
         }
     }
     
@@ -78,6 +77,27 @@ class ViewController: UIViewController {
             $0.removeFromSuperview()
         }
         drawSkills()
+    }
+    
+    private func hideButtonsFromSkillView() {
+        skillsView.subviews.compactMap {
+            $0 as? SkillView
+        }
+        .forEach {
+            $0.hideButton()
+        }
+        plusButton.isHidden = true
+    }
+    
+    private func showButtonsFromSkillView() {
+        skillsView.subviews.compactMap {
+            $0 as? SkillView
+        }
+        .forEach {
+            $0.showButton()
+        }
+        skillsHeight.constant = skillsHeight.constant + 30
+        plusButton.isHidden = false
     }
     
     private func setEditButton() {
@@ -98,14 +118,12 @@ class ViewController: UIViewController {
                 
                 if sumOfWidth + width + offsetBetweenSkills <= maxWidth {
                     view.frame = CGRectMake(sumOfWidth, CGFloat(j) * view.height, view.frame.size.width, view.frame.size.height)
-                    view.hideButton()
                     skillsView.addSubview(view)
                     i += 1
                     sumOfWidth += width + offsetBetweenSkills
                 }
                 else if width > maxWidth && sumOfWidth == 0 {
                     view.frame = CGRectMake(0, CGFloat(j) * view.height, maxWidth, view.frame.size.height)
-                    view.hideButton()
                     skillsView.addSubview(view)
                     j += 1
                     i += 1
@@ -114,7 +132,6 @@ class ViewController: UIViewController {
                 else if width > maxWidth && sumOfWidth > 0 {
                     j += 1
                     view.frame = CGRectMake(0, CGFloat(j) * view.height, maxWidth, view.frame.size.height)
-                    view.hideButton()
                     skillsView.addSubview(view)
                     j += 1
                     i += 1
@@ -128,11 +145,46 @@ class ViewController: UIViewController {
             }
         }
         let height = 30.0 * CGFloat(j + 1)
-        skillsHeight.constant = height + 30
-        var button = UIButton(frame: CGRect(x: 0, y: height, width: 30, height: 30))
-        button.setTitle("+", for: .normal)
-        button.isHidden = true
-
+        skillsHeight.constant = height
+        plusButton = UIButton(frame: CGRect(x: 0, y: height, width: 30, height: 30))
+        plusButton.backgroundColor = UIColor(red: 0.953, green: 0.953, blue: 0.961, alpha: 1)
+        plusButton.setTitle("+", for: .normal)
+        plusButton.setTitleColor(.black, for: .normal)
+        let action = UIAction {
+            action in
+            self.onPlusButtonTouchUp()
+        }
+        plusButton.addAction(action, for: .touchUpInside)
+        skillsView.addSubview(plusButton)
+    }
+    
+    public func alertWithTextField(title: String? = nil, message: String? = nil, placeholder: String? = nil, completion: @escaping ((String) -> Void) = { _ in }) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addTextField() { newTextField in
+            newTextField.placeholder = placeholder
+        }
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel) { _ in completion("") })
+        alert.addAction(UIAlertAction(title: "Добавить", style: .default) { action in
+            if
+                let textFields = alert.textFields,
+                let tf = textFields.first,
+                let result = tf.text
+            { completion(result) }
+            else
+            { completion("") }
+        })
+        self.present(alert, animated: true)
+    }
+    
+    private func onPlusButtonTouchUp() {
+        alertWithTextField(title: "Ваш навык", message: "Введите название навыка которым вы владеете", completion: {
+            newSkill in
+            if newSkill != "" {
+                self.model.skills.append(Skill(newSkill))
+                self.redrawSkills()
+            }
+        }
+)
     }
     
     func onDelete(id: String) {
@@ -151,6 +203,7 @@ class ViewController: UIViewController {
         model.skills.removeAll {
             $0.id == id
         }
+        redrawSkills()
     }
     
     private func setImage() {

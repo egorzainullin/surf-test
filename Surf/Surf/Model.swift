@@ -35,7 +35,7 @@ class Model {
     }
     
     init() {
-        let stringSkills = ["Kotlink", "Swift", "iOS,", "Android", "Git", "Communication", "Design"]
+        let stringSkills = ["Kotlin", "Swift", "iOS,", "Android", "Git", "Communication", "Design"]
         skills = stringSkills.map {
             Skill($0)
         }
