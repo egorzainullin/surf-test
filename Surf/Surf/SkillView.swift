@@ -44,7 +44,8 @@ class SkillView: UIView {
         label.text = skill.skillName
         label.numberOfLines = 1
         let widthOfLabel = label.intrinsicContentSize.width
-        label.frame = CGRectMake(0, 0, widthOfLabel, height)
+        label.lineBreakMode = .byTruncatingTail
+        label.adjustsFontSizeToFitWidth = false
         addSubview(label)
         
         imageButton = UIButton(frame: CGRect(x: widthOfLabel, y: 0, width: 30, height: 30))
