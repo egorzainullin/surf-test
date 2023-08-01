@@ -198,17 +198,6 @@ class ViewController: UIViewController {
     }
     
     func onDelete(id: String) {
-        let view = skillsView.subviews
-            .compactMap {
-                $0 as? SkillView
-            }
-            .filter {
-                $0.skill.id == id
-            }.first
-        guard let view = view
-        else {
-            fatalError("Id is not correct")
-        }
         model.skills.removeAll {
             $0.id == id
         }
