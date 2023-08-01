@@ -44,6 +44,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setEditButton()
+        setPlusButton()
         setImage()
         setName()
         setStatus()
@@ -53,6 +54,19 @@ class ViewController: UIViewController {
         maxWidth = bounds.size.width - 2 * offset
         drawSkills()
         hideButtonsFromSkillView()
+    }
+    
+    private func setPlusButton() {
+        plusButton = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        plusButton.backgroundColor = UIColor(red: 0.953, green: 0.953, blue: 0.961, alpha: 1)
+        plusButton.setTitle("+", for: .normal)
+        plusButton.setTitleColor(.black, for: .normal)
+        let action = UIAction {
+            action in
+            self.onPlusButtonTouchUp()
+        }
+        plusButton.addAction(action, for: .touchUpInside)
+        skillsView.addSubview(plusButton)
     }
     
     @IBAction func onEditButtonTouchUpInside(_ sender: Any) {
@@ -96,8 +110,8 @@ class ViewController: UIViewController {
         .forEach {
             $0.showButton()
         }
-        skillsHeight.constant = skillsHeight.constant + 30
         plusButton.isHidden = false
+        skillsHeight.constant = skillsHeight.constant + 30
     }
     
     private func setEditButton() {
@@ -145,17 +159,13 @@ class ViewController: UIViewController {
             }
         }
         let height = 30.0 * CGFloat(j + 1)
-        skillsHeight.constant = height
-        plusButton = UIButton(frame: CGRect(x: 0, y: height, width: 30, height: 30))
-        plusButton.backgroundColor = UIColor(red: 0.953, green: 0.953, blue: 0.961, alpha: 1)
-        plusButton.setTitle("+", for: .normal)
-        plusButton.setTitleColor(.black, for: .normal)
-        let action = UIAction {
-            action in
-            self.onPlusButtonTouchUp()
+        if isEditingMode {
+            skillsHeight.constant = height + 30
         }
-        plusButton.addAction(action, for: .touchUpInside)
-        skillsView.addSubview(plusButton)
+        else {
+            skillsHeight.constant = height
+        }
+        plusButton.frame = CGRectMake(0, height, 30, 30)
     }
     
     public func alertWithTextField(title: String? = nil, message: String? = nil, placeholder: String? = nil, completion: @escaping ((String) -> Void) = { _ in }) {
@@ -177,7 +187,7 @@ class ViewController: UIViewController {
     }
     
     private func onPlusButtonTouchUp() {
-        alertWithTextField(title: "Ваш навык", message: "Введите название навыка которым вы владеете", completion: {
+        alertWithTextField(title: "Ваш навык", message: "Введите название навыка, которым вы владеете", completion: {
             newSkill in
             if newSkill != "" {
                 self.model.skills.append(Skill(newSkill))
@@ -199,7 +209,6 @@ class ViewController: UIViewController {
         else {
             fatalError("Id is not correct")
         }
-        view.isHidden = true
         model.skills.removeAll {
             $0.id == id
         }
