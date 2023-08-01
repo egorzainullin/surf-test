@@ -64,10 +64,10 @@
 				4B38CE3B2A78EA800004C7E5 /* SceneDelegate.swift */,
 				4B38CE4D2A78F7320004C7E5 /* Model.swift */,
 				4B38CE3D2A78EA800004C7E5 /* ViewController.swift */,
-				4B38CE3F2A78EA800004C7E5 /* Main.storyboard */,
-				4B38CE422A78EA820004C7E5 /* Assets.xcassets */,
-				4B38CE442A78EA820004C7E5 /* LaunchScreen.storyboard */,
 				4B38CE4F2A792E600004C7E5 /* SkillView.swift */,
+				4B38CE3F2A78EA800004C7E5 /* Main.storyboard */,
+				4B38CE442A78EA820004C7E5 /* LaunchScreen.storyboard */,
+				4B38CE422A78EA820004C7E5 /* Assets.xcassets */,
 				4B38CE472A78EA820004C7E5 /* Info.plist */,
 			);
 			path = Surf;
